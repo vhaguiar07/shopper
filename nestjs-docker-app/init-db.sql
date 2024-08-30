@@ -13,5 +13,7 @@ CREATE TABLE IF NOT EXISTS measurements (
     measure_value INTEGER NOT NULL,
     measure_uuid UUID NOT NULL DEFAULT uuid_generate_v4(),
     image_url TEXT NOT NULL,
+    confirmed BOOLEAN DEFAULT FALSE,
+    confirmed_value INTEGER,
     UNIQUE (customer_code, measure_type, measure_datetime)
 );
