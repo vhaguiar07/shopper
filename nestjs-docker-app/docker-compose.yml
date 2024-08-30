@@ -10,7 +10,6 @@ services:
       - "8080:8080"
     environment:
       - NODE_ENV=${NODE_ENV}
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
     volumes:
       - .:/app
       - /app/node_modules
@@ -38,7 +37,6 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=test
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
     volumes:
       - .:/app
       - /app/node_modules

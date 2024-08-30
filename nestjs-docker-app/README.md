@@ -1,73 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Desafio Shopper
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Resumo
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Objetivo: desenvolver o back-end de um serviço que gerencia a leitura individualizada de consumo de água e gás. Deverá ser desenvolvida uma API REST em Node.js com TypeScript, em um container Docker.
 
-## Description
+Candidato: Victor Aguiar
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Acesse o back-end da aplicação pelo endereço http://localhost:8080. Garanta que as portas 8080 (back-end) e 5432 (Postgres) estejam disponíveis.
 
-## Installation
+A aplicação foi desenvolvida em containers (back-end em Nest.js, banco de dados com PostgreSQL e um container para testes). Para facilitar a utilização e compreensão das rotas arquitetadas, fiz a documentação delas com Swagger. A documentação está disponível em http://localhost:8080/docs
 
-```bash
-$ npm install
+## Requisitos
+
+- docker
+- docker-compose
+
+## Entregáveis
+
+### POST /upload
+
+#### Responsável por receber uma imagem em base 64, consultar o Gemini e retornar a medida lida pela API
+
+_Validar o tipo de dados dos parâmetros enviados (inclusive o base64)_ - Esse requisito foi atendido com o Status 400 - "Os dados fornecidos no corpo da requisição são inválidos"
+
+_Verificar se já existe uma leitura no mês naquele tipo de leitura._ - Esse requisito foi atendido com o Status 409 - "Já existe uma leitura para este tipo no mês atual"
+
+_Integrar com uma API de LLM para extrair o valor da imagem_ - A integração foi feita com a API Vision do Google. Fiz com que a extração do valor da imagem leve em consideração sempre o número com maior destaque na imagem. Ou seja, se por acaso a imagem tiver números em diferentes locais, o código procurará sempre o maior para retornar
+
+### PATCH /confirm
+
+#### Responsável por confirmar ou corrigir o valor lido pelo LLM,
+
+_Validar o tipo de dados dos parâmetros enviados_ - Esse requisito foi atendido com o Status 400. Caso algum dado na requisição esteja errado (nome do campo errado, UUID inválido, uma string ao invés de um número para o valor a ser confirmado) - "Os dados fornecidos no corpo da requisição são inválidos"
+
+_Verificar se o código de leitura informado existe_ - Esse requisito foi atendido com o Status 404. Caso a requisição tenha um UUID válido, mas não existente no banco de dados - "Leitura não encontrada"
+
+_Verificar se o código de leitura já foi confirmado_ - Esse requisito foi atendido com o Status 409 - "Leitura já confirmada" 
+
+_Salvar no banco de dados o novo valor informado_ - Após uma requisição bem sucedida (Status 200), o banco de dados atualiza o campo "confirmed_value" com o valor inserido na requisição (obs, ele NÃO altera o valor antigo de measure_value, ele simplesmente insere o novo valor em outro campo), e atualiza o valor do campo boolean "confirmed".
+
+### GET /`<customer_code>`/list
+
+#### Responsável por listar as medidas realizadas por um determinado cliente
+
+_Receber o código do cliente e filtrar as medidas realizadas por ele_ - A requisição retorna um array com todas as medições realizadas pelo cliente.
+
+_Ele opcionalmente pode receber um query parameter “measure_type”, que deve ser “WATER” ou “GAS”_ - A requisição pode receber opcionalmente na URL o valor measure_type, sendo case insensitive.
+
+### Testes unitários
+
+Foram escritos alguns testes para os serviços. Eles podem ser executados pelo container de teste.
+
+## Iniciar a stack localmente
+
+```shell
+make up
 ```
 
-## Running the app
+## Derrubar a stack localmente
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```shell
+make down
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+> [!NOTE]
+> Por se tratar de uma arquitetura mais simples, o banco de dados Postgres foi implementado sem ORM. Porém, poderia também optar por utilizar o Prisma por exemplo.
