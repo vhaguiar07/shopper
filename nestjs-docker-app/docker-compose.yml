@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     container_name: nestjs-app
@@ -7,7 +9,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      NODE_ENV: production
+      - NODE_ENV=${NODE_ENV}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
     volumes:
       - .:/app
       - /app/node_modules
@@ -21,11 +24,27 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: nestuser
-      POSTGRES_PASSWORD: nestpassword
-      POSTGRES_DB: nestdb
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  test:
+    container_name: nestjs-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=test
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    command: npm test
 
 volumes:
   pgdata:
