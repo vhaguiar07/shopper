@@ -16,7 +16,7 @@ export class UploadService {
 
   constructor() {
     this.client = new ImageAnnotatorClient({
-      keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS!,
+      apiKey: process.env.GEMINI_API_KEY,
     });
     
     this.dbPool = new Pool({
