@@ -4,7 +4,7 @@ import { IsString, IsNumber } from 'class-validator';
 export class ConfirmMeasureDto {
   @ApiProperty({
     description: 'UUID da medição',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: '553a6e3e-6b3e-48fd-8310-f0af5864b43c',
   })
   @IsString()
   measure_uuid!: string;
