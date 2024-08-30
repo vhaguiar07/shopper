@@ -4,7 +4,7 @@ import { ListService } from './list.service';
 import { ListMeasuresDto } from './dto/list-measures.dto';
 
 @ApiTags('list')
-@Controller('list')
+@Controller()
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
