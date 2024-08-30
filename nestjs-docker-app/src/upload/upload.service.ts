@@ -68,12 +68,9 @@ export class UploadService {
       const base64Data = image.replace(/^data:image\/(jpeg|png);base64,/, '');
 
       const tempFilePath = path.join(this.TEMP_DIR, `${uuidv4()}.png`);
-      await fs.writeFile(tempFilePath, base64Data, 'base64');
+      fs.writeFileSync(tempFilePath, base64Data, 'base64');
 
       const [result] = await this.client.textDetection(tempFilePath);
-
-      const textAnnotations = result.textAnnotations || [];
-      const extractedText = textAnnotations.length > 0 ? textAnnotations[0]?.description || '' : '';
 
       const measureValue = this.extractHighlightedMeasureValue(result);
 
