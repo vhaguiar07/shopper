@@ -20,11 +20,16 @@ export class UploadService {
     });
     
     this.dbPool = new Pool({
-      user: process.env.POSTGRES_USER,
-      host: process.env.POSTGRES_HOST,
-      database: process.env.POSTGRES_DB,
-      password: process.env.POSTGRES_PASSWORD,
-      port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
+      // user: process.env.POSTGRES_USER,
+      // host: process.env.POSTGRES_HOST,
+      // database: process.env.POSTGRES_DB,
+      // password: process.env.POSTGRES_PASSWORD,
+      // port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
+      user: "nestuser",
+      host: "db",
+      database: "water_gas_management",
+      password: "nestpassword",
+      port: 5432
     });
   }
 
